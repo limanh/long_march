@@ -17,7 +17,7 @@ from xlutils.copy import copy
 def read_excel():
     tables = []
     # 打开文件
-    workbook = xlrd.open_workbook(r'景点信息总表.xls')
+    workbook = xlrd.open_workbook(r'景点信息总表.xls')     # 本地文件中获取作者名称和链接
     # 根据sheet索引或者名称获取sheet内容
     sheet = workbook.sheet_by_name('Sheet1')
     # 读取是从0开始，不是1 ！！！
@@ -55,7 +55,7 @@ async def getCookie(data):
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 async def author_page(url,proxy):
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.3",
+        "User-Agent": "",  # UA
         'Host': 'www.mafengwo.cn',
         'Referer': url,
         'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="98", "Google Chrome";v="98"',
@@ -122,6 +122,7 @@ async def zhuijia(datalist,name,index):
     return index+1
 
 async def main(tables):
+    # 网上搜寻到的高匿，使用之前先测试能否使用
     ip_dic = ['http://106.75.25.83:80', 'http://112.6.117.178:8085', 'http://112.6.117.135:8085', 'http://120.220.220.95:8085',
               'http://223.96.90.216:8085', 'http://218.106.61.5:21080','http://219.246.65.55:80','http://39.108.88.42:80',
               'http://47.93.239.66:1080','http://221.122.91.65:80', 'http://218.106.61.5:21080','http://120.42.46.226:6666',
@@ -129,17 +130,13 @@ async def main(tables):
     tasks=[]
     # print(len(ip_dic))   # 11
     # data=['3','6','10','16','20']
-    for i in range(6501,6647):  # 6647  5很不错
-        proxy=ip_dic[3]  # 'http://120.220.220.95:8085';'http://223.96.90.216:8085'# 6可以,10很不错第二个，17
+    for i in range(6647):  
+        proxy=ip_dic[3]  # 3这个ip挺厉害 可以考虑加线程提高效率
         author=tables[i]['author']
         url = tables[i]['link']
         task=asyncio.create_task(zhuijia(await author_page(url,proxy),author,i))
         tasks.append(task)
     await asyncio.wait(tasks)
-
-# async def main():
-#     proxes=
-
 
 if __name__ == '__main__':
     tables = read_excel()
